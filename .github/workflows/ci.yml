@@ -1,0 +1,98 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - release/*
+      - hotfix/*
+    tags:
+      - v*
+
+  pull_request:
+    branches:
+      - canary
+
+jobs:
+  build:
+    name: ${{ matrix.platform }} (${{ matrix.device }})
+    runs-on: ${{ matrix.os }}
+
+    # Strategy
+    # https://help.github.com/en/articles/workflow-syntax-for-github-actions#jobsjob_idstrategy
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macOS-latest
+        device:
+          - any
+          - cpuonly
+
+        include:
+          - os: ubuntu-latest # Ubuntu
+            platform: ubuntu
+            python: python3
+          - os: windows-latest # Windows
+            platform: windows
+            python: python
+          - os: macOS-latest # macOS
+            platform: macos
+            python: python3
+
+        exclude:
+          - os: macOS-latest
+            device: any
+
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          submodules: true
+
+      - name: Use Python 3.7
+        uses: actions/setup-python@v1
+        if: runner.os != 'macOS'
+        with:
+          python-version: 3.7
+          deviceitecture: x64
+
+      - name: Use Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+
+      - name: Use 7z
+        if: matrix.platform == 'macos'
+        run: brew install p7zip
+
+      - name: Use Yarn
+        run: npm install -g yarn
+
+      - name: Setup (NodeJS)
+        working-directory: src/scripts
+        run: yarn install
+
+      - name: Setup (Python)
+        working-directory: src
+        run: ${{ matrix.python }} -m pip install -r requirements.txt --no-cache-dir
+
+      - name: Setup (CUDA)
+        working-directory: src
+        if: matrix.device == 'any'
+        run: ${{ matrix.python }} -m pip install cupy-cuda100 --no-cache-dir
+
+      - name: Build
+        working-directory: src/scripts
+        run: ${{ matrix.python }} build.py --debug
+
+      - name: Release
+        working-directory: src/scripts
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_REF: ${{ github.ref }}
+          BUILD_PLATFORM: ${{ matrix.platform }}
+          BUILD_DEVICE: ${{ matrix.device }}
+        run: node release.js

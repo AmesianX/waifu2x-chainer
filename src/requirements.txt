@@ -1,0 +1,4 @@
+chainer
+pillow
+#cupy-cuda100
+pyinstaller

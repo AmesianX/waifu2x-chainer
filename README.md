@@ -3,6 +3,10 @@
 This is a Chainer implementation of waifu2x [[1]](https://github.com/nagadomi/waifu2x).
 Note that the training procedure of waifu2x-chainer may be slightly different from original waifu2x.
 
+## DreamNet Changes
+
+Files to compile the project to different versions and operating systems.
+
 ## Summary
 
 ![](images/summery.png)
