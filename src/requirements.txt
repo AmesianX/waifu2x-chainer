@@ -1,4 +1,5 @@
+numpy
 chainer
 pillow
-#cupy-cuda100
 pyinstaller
+#cupy-cuda100

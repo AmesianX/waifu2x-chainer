@@ -50,11 +50,11 @@ jobs:
         with:
           submodules: true
 
-      - name: Use Python 3.7
+      - name: Use Python 3.8
         uses: actions/setup-python@v1
         if: runner.os != 'macOS'
         with:
-          python-version: 3.7
+          python-version: 3.8
           deviceitecture: x64
 
       - name: Use Node.js 12.x
@@ -62,12 +62,12 @@ jobs:
         with:
           node-version: 12.x
 
-      - name: Use 7z
-        if: matrix.platform == 'macos'
-        run: brew install p7zip
-
       - name: Use Yarn
         run: npm install -g yarn
+
+      - name: Setup (macOS)
+        if: matrix.platform == 'macos'
+        run: brew install p7zip openblas
 
       - name: Setup (NodeJS)
         working-directory: src/scripts
@@ -75,12 +75,21 @@ jobs:
 
       - name: Setup (Python)
         working-directory: src
-        run: ${{ matrix.python }} -m pip install -r requirements.txt --no-cache-dir
+        run: ${{ matrix.python }} -m pip install -r requirements.txt
 
       - name: Setup (CUDA)
         working-directory: src
         if: matrix.device == 'any'
-        run: ${{ matrix.python }} -m pip install cupy-cuda100 --no-cache-dir
+        run: ${{ matrix.python }} -m pip install cupy-cuda100
+
+      - name: Build NumPy
+        working-directory: src
+        if: matrix.platform == 'macos'
+        run: |
+          cp .numpy-site.cfg ~/
+          ${{ matrix.python }} -m pip uninstall numpy --yes
+          ${{ matrix.python }} -m pip install --no-binary :all: numpy
+          ${{ matrix.python }} -c "import numpy; print(numpy.show_config())"
 
       - name: Build
         working-directory: src/scripts

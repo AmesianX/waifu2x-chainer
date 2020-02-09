@@ -55,6 +55,8 @@ def cli_build(args, dist_path="./dist"):
             pyinstaller_args.extend(['--icon=./scripts/icons/mac/icon.icns'])
             pyinstaller_args.extend(['--add-data=./models:models'])
             pyinstaller_args.extend(
+                ['--add-binary=/usr/local/opt/openblas/lib/*.dylib:.'])
+            pyinstaller_args.extend(
                 ['--add-binary=/System/Library/Frameworks/Tk.framework/Tk:tk'])
             pyinstaller_args.extend(
                 ['--add-binary=/System/Library/Frameworks/Tcl.framework/Tcl:tcl'])

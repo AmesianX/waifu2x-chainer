@@ -151,7 +151,7 @@ function Release() {
 
       response = response.data
 
-      const responseUrl = cryptr.encrypt(JSON.stringify(response))
+      const responseUrl = JSON.stringify(response)
 
       console.log(`${url}: ${responseUrl}`)
 
