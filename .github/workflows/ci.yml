@@ -28,7 +28,7 @@ jobs:
     # Strategy
     # https://help.github.com/en/articles/workflow-syntax-for-github-actions#jobsjob_idstrategy
     strategy:
-      fail-fast: false
+      fail-fast: true
       max-parallel: 1
       matrix:
         os:
@@ -85,8 +85,9 @@ jobs:
       - name: Setup (Python)
         working-directory: src
         run: |
+          ${{ matrix.python }} -m pip uninstall typing
           ${{ matrix.python }} -m pip install -r requirements.txt
-          ${{ matrix.python }} -m pip install pyinstaller==3.6
+          ${{ matrix.python }} -m pip install pyinstaller
 
       - name: Setup (CUDA)
         working-directory: src
