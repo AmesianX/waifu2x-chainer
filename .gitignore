@@ -34,7 +34,6 @@ node_modules/
 .prettierrc
 *.tar.gz
 *.7z
-*.lock
 
 # Build Configuration
 *.spec
