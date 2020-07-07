@@ -2,6 +2,7 @@ from __future__ import division
 import argparse
 import os
 import time
+import sys
 
 import chainer
 import numpy as np
@@ -125,10 +126,13 @@ def load_models(cfg):
 
 
 def main():
-    p = argparse.ArgumentParser(description='Chainer implementation of waifu2x')
+    p = argparse.ArgumentParser(
+        description='Chainer implementation of waifu2x')
+
+    p.add_argument('--version', action='version', version='0.1.0')
     p.add_argument('--gpu', '-g', type=int, default=-1)
     p.add_argument('--input', '-i', default='images/small.png')
-    p.add_argument('--output', '-o', default='./')
+    p.add_argument('--output', '-o', type=str, required=True)
     p.add_argument('--quality', '-q', type=int, default=None)
     p.add_argument('--model_dir', '-d', default=None)
     p.add_argument('--scale_ratio', '-s', type=float, default=2.0)
@@ -154,6 +158,7 @@ def main():
     g.add_argument('--longer_side', '-L', type=int, default=0)
 
     args = p.parse_args()
+
     if args.arch in srcnn.table:
         args.arch = srcnn.table[args.arch]
 
@@ -222,16 +227,21 @@ def main():
             print('Elapsed time: {:.6f} sec'.format(time.time() - start))
 
             outname += '({}_{}){}'.format(args.arch, args.color, outext)
-            if os.path.exists(outpath):
-                outpath = os.path.join(outdir, outname)
+
+            #if os.path.exists(outpath):
+            #    outpath = os.path.join(outdir, outname)
+
+            outpath = args.output
 
             lossless = args.quality is None
             quality = 100 if lossless else args.quality
             icc_profile = src.info.get('icc_profile')
             icc_profile = "" if icc_profile is None else icc_profile
+
             dst.convert(src.mode).save(
                 outpath, quality=quality, lossless=lossless,
                 icc_profile=icc_profile)
+
             six.print_('Saved as \'{}\''.format(outpath))
 
 

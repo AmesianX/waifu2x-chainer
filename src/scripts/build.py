@@ -34,7 +34,7 @@ def check_dependencies():
         sys.exit(1)
 
 
-def cli_build(args, dist_path="./dist"):
+def cli_build(args, dist_path="../dist"):
     def pyinstaller_args():
         pyinstaller_args = [
             '--distpath={}'.format(dist_path),
@@ -45,11 +45,20 @@ def cli_build(args, dist_path="./dist"):
             '--specpath=.',
             '--name=waifu2x',
             '--osx-bundle-identifier=com.dreamnet.waifu2x',
+            '--hidden-import=fastrlock',
+            '--hidden-import=fastrlock.rlock',
+            '--hidden-import=cupy.core._routines_indexing',
+            '--hidden-import=cupy.core._dtype',
+            '--hidden-import=cupy.core.flags',
+            '--hidden-import=cupy.core._scalar',
+            '--hidden-import=cupy.core._ufuncs',
+            '--hidden-import=cupy.core._routines_sorting',
             'waifu2x.py',
         ]
         if c.get_os() == c.OS.LINUX:
             pyinstaller_args.extend(['--icon=./scripts/icons/win/icon.ico'])
             pyinstaller_args.extend(['--add-data=./models:models'])
+            pyinstaller_args.extend(['--add-data=./scripts/lib/cupy:cupy'])
             return pyinstaller_args
         if c.get_os() == c.OS.MAC:
             pyinstaller_args.extend(['--icon=./scripts/icons/mac/icon.icns'])
@@ -64,11 +73,13 @@ def cli_build(args, dist_path="./dist"):
         if c.get_os() == c.OS.WIN:
             pyinstaller_args.extend(['--icon=./scripts/icons/win/icon.ico'])
             pyinstaller_args.extend(['--add-data=./models;models'])
+            pyinstaller_args.extend(['--add-data=./scripts/lib/cupy;cupy'])
             pyinstaller_args.extend(
                 ['--add-binary=./scripts/lib/msvcp140.dll;.'])
             return pyinstaller_args
 
     c.log.info('Building')
+
     with c.cd(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")):
         cmd = [sys.executable, '-m', 'PyInstaller'] + pyinstaller_args()
         c.log.debug(cmd)
@@ -76,10 +87,11 @@ def cli_build(args, dist_path="./dist"):
         if r.returncode != 0:
             c.log.fatal("Cli build failed")
             sys.exit(1)
+
     c.log.info('Cli successfully built')
 
 
-def run(args, dist_path="./dist"):
+def run(args, dist_path="../dist"):
     cli_build(args, dist_path)
 
     c.log.info('Build completed!')
