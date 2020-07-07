@@ -9,9 +9,16 @@ const Seven = require('node-7z')
 const output = []
 
 //
-process.env.DEPLOY_GIT_REPO = 'waifu2x-chainer'
+let isRelease = false
 
 if (process.env.GITHUB_REF) {
+  isRelease = process.env.GITHUB_REF.substring(0, 9) === 'refs/tags'
+}
+
+//
+process.env.DEPLOY_GIT_REPO = 'waifu2x-chainer'
+
+if (isRelease) {
   // eslint-disable-next-line prefer-destructuring
   process.env.DEPLOY_GIT_TAG = process.env.GITHUB_REF.split('/')[2]
 } else if (process.env.GITHUB_SHA) {
@@ -25,7 +32,7 @@ const FILENAME = `waifu2x-${VERSION}-${process.env.BUILD_PLATFORM}-${process.env
 const FULLPATH = path.resolve(DISTPATH, '../', FILENAME)
 const PROVIDERS = []
 
-if (process.env.GITHUB_REF) {
+if (isRelease) {
   PROVIDERS.push('Github', 'DreamLinkCluster', 'MEGA')
 }
 
@@ -38,7 +45,7 @@ async function run(release) {
   if (PROVIDERS.length === 0) {
     return
   }
-  
+
   release.addProvider(PROVIDERS)
 
   release.on('upload_begin', (provider) => {
@@ -103,6 +110,13 @@ function compress() {
  *
  */
 async function start() {
+  console.log(FILENAME)
+
+  if (PROVIDERS.length === 0) {
+    console.warn('There are no providers to upload!')
+    return
+  }
+
   if (fs.existsSync(DISTPATH)) {
     await compress()
 
