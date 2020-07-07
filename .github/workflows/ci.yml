@@ -84,10 +84,7 @@ jobs:
 
       - name: Setup (Python)
         working-directory: src
-        run: |
-          ${{ matrix.python }} -m pip install -r requirements.txt
-          ${{ matrix.python }} -m pip uninstall typing
-          ${{ matrix.python }} -m pip install pyinstaller
+        run: ${{ matrix.python }} -m pip install -r requirements.txt
 
       - name: Setup (CUDA)
         working-directory: src
