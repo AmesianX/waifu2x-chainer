@@ -53,6 +53,7 @@ def cli_build(args, dist_path="../dist"):
             '--hidden-import=cupy.core._scalar',
             '--hidden-import=cupy.core._ufuncs',
             '--hidden-import=cupy.core._routines_sorting',
+            '--hidden-import=pkg_resources.py2_warn',
             'waifu2x.py',
         ]
         if c.get_os() == c.OS.LINUX:
