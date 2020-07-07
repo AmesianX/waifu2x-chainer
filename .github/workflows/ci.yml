@@ -64,7 +64,7 @@ jobs:
         if: runner.os != 'macOS'
         with:
           python-version: 3.7
-          deviceitecture: x64
+          architecture: x64
 
       - name: Use Node.js 12.x
         uses: actions/setup-node@v1
@@ -85,8 +85,8 @@ jobs:
       - name: Setup (Python)
         working-directory: src
         run: |
-          ${{ matrix.python }} -m pip uninstall typing
           ${{ matrix.python }} -m pip install -r requirements.txt
+          ${{ matrix.python }} -m pip uninstall typing
           ${{ matrix.python }} -m pip install pyinstaller
 
       - name: Setup (CUDA)
