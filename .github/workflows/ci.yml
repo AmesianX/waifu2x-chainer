@@ -9,7 +9,6 @@ on:
       - release/*
       - hotfix/*
       - canary
-      - master
     tags:
       - v*
 
@@ -18,7 +17,6 @@ on:
       - src/**
     branches:
       - canary
-      - master
 
 jobs:
   build:
@@ -121,8 +119,8 @@ jobs:
           DEPLOY_ENCRYPT_KEY: ${{ secrets.DEPLOY_ENCRYPT_KEY }}
           DEPLOY_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEPLOY_GITHUB_OWNER: dreamnettech
-          DEPLOY_DREAMLINKCLUSTER_USERNAME: dreamnet
-          DEPLOY_DREAMLINKCLUSTER_PASSWORD: ${{ secrets.DEPLOY_DREAMLINKCLUSTER_PASSWORD }}
+          DEPLOY_PINATA_KEY: ${{ secrets.DEPLOY_PINATA_KEY }}
+          DEPLOY_PINATA_SECRET: ${{ secrets.DEPLOY_PINATA_SECRET }}
           DEPLOY_MEGA_EMAIL: ${{ secrets.DEPLOY_MEGA_EMAIL }}
           DEPLOY_MEGA_PASSWORD: ${{ secrets.DEPLOY_MEGA_PASSWORD }}
           DEPLOY_MEGA_FOLDER: "/Projects/Waifu2X/Releases/"
